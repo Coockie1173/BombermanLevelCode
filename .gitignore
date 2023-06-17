@@ -1,0 +1,6 @@
+# Ignore program object files
+program.o
+
+# Ignore program executable files
+program.elf
+program.bin
