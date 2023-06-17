@@ -27,3 +27,5 @@ As for figuring out the submap itself, it boils down to: compare the first 0x20 
 # Debugging
 
 Whilst there is no easy way to just "debug" the C code itself, you can debug the raw asm within Project64. When making, the command line should spit out a ton of debug info (such as to which address everything compiled). You can easily use this information to place a breakpoint and see what the issue is.
+**If the compiler is compiling your function as a stub, declare it as volatile.**
+**If the compiler is ignoring your variables, use them in an arbitrary if function. This should be a last resort.**

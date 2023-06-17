@@ -4,3 +4,4 @@ program.o
 # Ignore program executable files
 program.elf
 program.bin
+program.bin.bak
