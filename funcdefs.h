@@ -138,6 +138,8 @@ typedef enum
     INPUT_L = 0x00200000
 } Inputs;
 
+float* DeltaTime = (float*)0x802AC644;
+
 const int *PlayerInput = (int *)0x80027064;
 const int *PlayerPointer = (int *)0x800AEE18;
 #endif
