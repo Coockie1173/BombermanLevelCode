@@ -1,6 +1,82 @@
 #ifndef _FUNCDEFS_H_
 #define _FUNCDEFS_H_
 
+typedef struct {
+    int modelFlags;         // Offset: 0x00
+    int Unk04;             // Offset: 0x04
+    int Unk08;             // Offset: 0x08
+    int visibilityAnimationFlags;   // Offset: 0x0C
+    float posX;              // Offset: 0x10
+    float posY;              // Offset: 0x14
+    float posZ;              // Offset: 0x18
+    float rotX;              // Offset: 0x1C
+    float rotY;              // Offset: 0x20
+    float rotZ;              // Offset: 0x22
+    float scaleX;            // Offset: 0x24
+    float scaleY;            // Offset: 0x28
+    float scaleZ;            // Offset: 0x2C
+    int Unk30;             // Offset: 0x30
+    int Unk34;             // Offset: 0x34
+    int Unk38;             // Offset: 0x38
+    int* modelPtr;         // Offset: 0x3C
+    int Unk40;             // Offset: 0x40
+    int Unk44;             // Offset: 0x44
+    int Unk48;             // Offset: 0x48
+    int Unk4C;             // Offset: 0x4C
+} ModelData;
+
+typedef struct {
+    int ID;      // Offset: 0x00
+    int Unk1;      // Offset: 0x04
+    int Unk2;      // Offset: 0x08
+    int Unk3;      // Offset: 0x0C
+    int Unk4;         // Offset: 0x10
+    int Unk5;         // Offset: 0x14
+    int Unk6;         // Offset: 0x18
+    int Unk7;         // Offset: 0x1C
+    int Unk8;         // Offset: 0x20
+    int Unk9;         // Offset: 0x24
+    int Unk10;        // Offset: 0x28
+    int Unk11;        // Offset: 0x2C
+    int Unk12;        // Offset: 0x30
+    float Unk13;        // Offset: 0x34
+    float Unk14;        // Offset: 0x38
+    int Unk15;        // Offset: 0x3C
+    ModelData* ModelDataPtr;        // Offset: 0x40
+    int Unk17;        // Offset: 0x44
+    int Unk18;        // Offset: 0x48
+    int Unk19;        // Offset: 0x4C
+    int Unk20;        // Offset: 0x50
+    int Unk21;        // Offset: 0x54
+    const float X;        // Offset: 0x58
+    const float Y;        // Offset: 0x5C
+    const float Z;        // Offset: 0x60
+    int Unk25;        // Offset: 0x64
+    int Unk26;        // Offset: 0x68
+    float VelocityY;        // Offset: 0x6C
+    float Unk28;        // Offset: 0x70
+    float Unk29;        // Offset: 0x74
+    int* Unk30;        // Offset: 0x78
+    int* Unk31;        // Offset: 0x7C
+} ModelEntry;
+
+typedef enum {
+    R_CBUTTONS   = 0x0001,
+    L_CBUTTONS   = 0x0002,
+    D_CBUTTONS   = 0x0004,
+    U_CBUTTONS   = 0x0008,
+    R_TRIG       = 0x0010,
+    L_TRIG       = 0x0020,
+    R_JPAD       = 0x0100,
+    L_JPAD       = 0x0200,
+    D_JPAD       = 0x0400,
+    U_JPAD       = 0x0800,
+    START_BUTTON = 0x1000,
+    Z_TRIG       = 0x2000,
+    B_BUTTON     = 0x4000,
+    A_BUTTON     = 0x8000
+} ControllerButtons;
+
 typedef int (*CheckTileFuncS)(short X1, short Y1, short X2, short Y2);
 CheckTileFuncS CheckTileFunc = (CheckTileFuncS)0x802457D8;
 
@@ -84,7 +160,7 @@ InitPlayerS InitPlayer = (InitPlayerS)0x80245CDC;
 
 typedef struct
 {
-    int *Ptr;
+    ModelEntry *Ptr;
     int ModelID;
     float X;
     float Y;
@@ -98,10 +174,10 @@ typedef struct
     int Inventory;
 } SpecialObject;
 
-typedef int *(*LoadModelInRAMS)(int ModelID, int Unk, float X, float Y, float Z);
+typedef ModelEntry *(*LoadModelInRAMS)(int ModelID, int Unk, float X, float Y, float Z);
 LoadModelInRAMS LoadModelInRAM = (LoadModelInRAMS)0x802310F4;
 
-typedef void *(*LoadModelUnkS)(int *ModelPTR, int Unk);
+typedef void *(*LoadModelUnkS)(ModelEntry *ModelPTR, int Unk);
 LoadModelUnkS LoadModelUnk = (LoadModelUnkS)0x80231408;
 
 typedef void *(*SetColissionTopS)(int TileX1, int Layer, int TileY1, int TileX2, int TileY2, int TileType); //tiletype in raw tiledata
@@ -133,13 +209,44 @@ MovePlayerS MovePlayer = (MovePlayerS)0x8024A824;
 typedef void *(*LockPlayerS)(int Locked);
 LockPlayerS LockPlayer = (LockPlayerS)0x802452E8;
 
-typedef enum
+typedef struct {
+    int Unk00;     // Offset: 0x00
+    int UnkFlags1;     // Offset: 0x04
+    int FileID;     // Offset: 0x08
+    int UnkFlags2;     // Offset: 0x0C
+    int UnkFlags3;     // Offset: 0x10
+    int UnkFlags4;     // Offset: 0x14
+    float ScrollXSpeed;     // Offset: 0x18
+    float ScrollYSpeed;     // Offset: 0x1C
+    float ScrollX;     // Offset: 0x20
+    float ScrollY;     // Offset: 0x24
+    float OffsetX;     // Offset: 0x28
+    float OffsetY;     // Offset: 0x2C
+    float ResX;     // Offset: 0x30
+    float ResY;     // Offset: 0x34
+    float ShiftX;     // Offset: 0x38
+    float ShiftY;     // Offset: 0x3C
+    float ScaleX;     // Offset: 0x40
+    float ScaleY;     // Offset: 0x44
+    float ImageWidth;     // Offset: 0x48
+    float ImageHeight;     // Offset: 0x4C
+} SkyBox;
+
+SkyBox* SetSkyBox(int FileID)
 {
-    INPUT_L = 0x00200000
-} Inputs;
+    SkyBox* (*InitSkyBox)(int FileID);
+    InitSkyBox = (int* (*)(int FileID))0x80287DC0;
+    SkyBox* LoadedSkybox = InitSkyBox(FileID);
+
+    void* (*SetSkyBoxFlags)(SkyBox* Sky, int Flags);
+    SetSkyBoxFlags = (void* (*)(SkyBox* Sky, int Flags)) 0x802878E0;
+    SetSkyBoxFlags(LoadedSkybox, 0x20000001);
+
+    return LoadedSkybox;
+}
 
 float* DeltaTime = (float*)0x802AC644;
 
-const int *PlayerInput = (int *)0x80027064;
-const int *PlayerPointer = (int *)0x800AEE18;
+const short *PlayerInput = (short *)0x80027064;
+const ModelEntry **PlayerPointer = (ModelEntry **)0x800AEE18;
 #endif
