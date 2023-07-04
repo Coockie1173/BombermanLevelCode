@@ -1,6 +1,12 @@
 #ifndef _FUNCDEFS_H_
 #define _FUNCDEFS_H_
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846f
+#endif
+
+#define DEG_TO_RAD(degrees) ((degrees) * (M_PI / 180.0f))
+
 typedef struct {
     int modelFlags;         // Offset: 0x00
     int Unk04;             // Offset: 0x04
@@ -197,8 +203,9 @@ UnkFunctionAllocateS UnkFunctionAllocate = (UnkFunctionAllocateS)0x80231274;
 typedef void *(*UnkFunctionAllocate2S)(int *ptr, int unk1);
 UnkFunctionAllocate2S UnkFunctionAllocate2 = (UnkFunctionAllocate2S)0x8022984C;
 
+/// @brief 0x7F to lock
 typedef void *(*UnlockCameraS)(int Val);
-UnlockCameraS UnlockCamera = (UnlockCameraS)0x802362B8;
+UnlockCameraS SetCameraLock = (UnlockCameraS)0x802362B8;
 
 typedef void *(*StallFramesS)(int Frames);
 StallFramesS StallFrames = (StallFramesS)0x8023903C;
@@ -208,6 +215,45 @@ MovePlayerS MovePlayer = (MovePlayerS)0x8024A824;
 
 typedef void *(*LockPlayerS)(int Locked);
 LockPlayerS LockPlayer = (LockPlayerS)0x802452E8;
+
+typedef void *(*SetCameraPositionLateral)();
+
+SetCameraPositionLateral SetCameraLateralS = (SetCameraPositionLateral)0x802346C8;
+
+void SetCameraFocusPoint(float x, float y, float z) {
+    asm volatile (
+        "mov.s $f12, %0\n"  // Move x to f12 register
+        "mov.s $f14, %2\n"  // Move z to f14 register
+        "mfc1 $a2, %1\n"   // Move y to a2 register
+        :
+        : "f"(x), "f"(y), "f"(z)
+    );
+
+    void* result = SetCameraLateralS();
+
+    return 0;
+}
+
+typedef void *(*SetCameraPositionZoomRotationS)();
+SetCameraPositionZoomRotationS SetCameraPositionZoomRotation = (SetCameraPositionZoomRotationS)0x80234778;
+
+void SetCameraRotationAroundPoint(float RotY, float RotZ, float Distance) {
+    asm volatile (
+        "mov.s $f12, %0\n"  // Move x to f12 register
+        "mov.s $f14, %2\n"  // Move z to f14 register
+        "mfc1 $a2, %1\n"   // Move y to a2 register
+        :
+        : "f"(RotY), "f"(Distance), "f"(RotZ)
+    );
+
+    void* result = SetCameraPositionZoomRotation();
+
+    return 0;
+}
+
+//potentially threading so steer clear :)
+//typedef void *(*SetHasteModeFunctionS)(void* Func, int Unk1, int Unk2, int Unk3);
+//SetHasteModeFunctionS SetHasteModeFunction = (SetHasteModeFunctionS)0x80238B9C;
 
 typedef struct {
     int Unk00;     // Offset: 0x00

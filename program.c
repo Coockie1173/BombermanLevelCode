@@ -1,7 +1,6 @@
 #include "funcdefs.h"
-#define LevelModel 578
-#define LevelColission 588
-#define SpecialObjectCount 1
+#define LevelModel 0x205
+#define LevelColission 0x21A
 
 const void *__start() __attribute__((section(".text.start")));
 const void main(int State);
@@ -10,68 +9,37 @@ void DoNothing();
 void Init();
 void Update();
 void Death();
+void Haste();
+
+float RotY = 0;
+float DestY = 0;
+float RotationSpeed = 10;
+float Timer = 0;
+char HurryHappened = 0;
 
 AllocatedObject ObjectTable[] =
     {
-        {0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0},
+        {0x9D, 0, 0x10, 0xC, 0},
+        {0x4, 0, 0, 0, 0},
+        {0, 0x4, 0, 0, 0},
+        {0, 0, 0x4, 0, 0},
+        {0xFFFF, 0xFFFF, 0, 0x1B6, 0xFFFF},
+        {0xFFFF, 0xFFFF, 0xFFFF, 0, 0},
         {
             0xFFFF,
             0xFFFF,
             0xFFFF,
             0xFFFF,
             0xFFFF,
-        }};
-
-Enemy EnemyTable[] =
-    {
-        {0,
-         Regularredenemy,
-         0xDE},
-        {1,
-         Regularredenemy,
-         0xDE},
-        {2,
-         Regularredenemy,
-         0xDE},
-        {3,
-         Regularredenemy,
-         0xDE},
-        {4,
-         Regularredenemy,
-         0xDE},
-        {5,
-         Regularredenemy,
-         0xDE},
-};
-
-SpecialObject SpecialObjectTable[] =
-    {
-        {
-            0, // ptr should always be 0, there's a function that sets it
-            0x9D,
-            2350.0f,
-            200.0f,
-            2850.0f,
-            0x0F,
-            0x01,
-            0x0C,
-            0x05,
-            0x04,
-            0x41D,
-            0x0C,
         }};
 
 void *JumpTable[] =
     {
-        &DoNothing, //exit scene
-        &Init, //init
-        &Update, //update
-        &DoNothing, 
+        &DoNothing, // exit scene
+        &Init,      // init
+        &Update,    // update
+        &DoNothing,
+        &Haste, // hurry up!
         &DoNothing,
         &DoNothing,
         &DoNothing,
@@ -82,8 +50,7 @@ void *JumpTable[] =
         &DoNothing,
         &DoNothing,
         &DoNothing,
-        &DoNothing,
-        &Death, //death
+        &Death, // death
         &DoNothing};
 
 const void *__start()
@@ -97,12 +64,12 @@ const void main(int State)
     {
         if (State == 0x52)
         {
-            DoNothing(); //tile EFFECT 1
+            DoNothing(); // tile EFFECT 1
             return;
         }
         else if (State == 0x53)
         {
-            DoNothing(); //tile EFFECT 2
+            DoNothing(); // tile EFFECT 2
             return;
         }
         return;
@@ -150,23 +117,17 @@ void Init()
 {
     ObjectAllocate(&ObjectTable);
 
-    for (int i = 0; i < 6; i++)
-    {
-        Enemy n = EnemyTable[i];
-        EnemyAllocate(n.ID, n.Behaviour, n.ModelID);
-    }
-
     AllocateLevel(LevelModel);
     AllocateColission(LevelColission);
     InitPlayer();
 
-    for (int i = 0; i < SpecialObjectCount; i++)
-    {
-        SpecialObject SO = SpecialObjectTable[i];
-        int *ModelPTR = LoadModelInRAM(SO.ModelID, 0xD0, SO.X, SO.Y, SO.Z);
-        LoadModelUnk(ModelPTR, 0x03000000);
-        SpecialObjectTable[i].Ptr = ModelPTR;
-    }
+    SetCameraLock(0x7F);
+    SetCameraFocusPoint(2365, 1354, 350);
+    SetCameraRotationAroundPoint(0, 55, 3500);
+
+    RotY = 0;
+    DestY = 0;
+    Timer = 0;
     return;
 }
 
@@ -175,7 +136,32 @@ void Death()
     return;
 }
 
+
 void Update()
 {
+    if (HurryHappened)
+    {
+        Timer++;
+        if(Timer >= 300)
+        {
+            Timer = 0;
+            DestY += 90;
+        }
 
+        if(RotY < DestY)
+        {
+            RotY += RotationSpeed;
+            SetCameraRotationAroundPoint(RotY, 55, 3500);
+        }
+        else if(DestY >= 360)
+        {
+            RotY = 0;
+            DestY = 0;
+        }
+    }
+}
+
+void Haste()
+{
+    HurryHappened = 1;
 }
